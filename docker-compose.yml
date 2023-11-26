@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    ports:
+      - "${ES_PORT}:9200"
+    volumes:
+      - "./elastic-data:/usr/share/elasticsearch/data"
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=127.0.0.1
+      - xpack.security.enabled=false
+    networks:
+      - elastic
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
+    ports:
+      - "${KIBANA_PORT}:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=${ELASTICSEARCH_URL}
+      - ELASTICSEARCH_URL=${ELASTICSEARCH_URL}
+    networks:
+      - elastic
+
+networks:
+  elastic:
+    driver: bridge
